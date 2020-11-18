@@ -21,8 +21,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# ec2 client for spot requests
+client = boto3.client('ec2')
 
-# aws sqs parameters
+# sqs client
 sqs = boto3.client('sqs',
                    aws_access_key_id     = os.environ['AWS_ACCESS_KEY_ID'],
                    aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY'],
@@ -63,7 +65,17 @@ def delete_message(receipt_handle):
 # {'detail-type': 'EC2 Spot Instance Interruption Warning', 'detail': {'instance-id': 'i-00b0d8c85295200b0', 'instance-action': 'terminate'}}
 # {'detail-type': 'EC2 Spot Instance Request Fulfillment', 'detail': {'spot-instance-request-id': 'sir-mi5g76sm', 'instance-id': 'i-03cfa8dd683e2d5bf'}}
 
-def handle_incomming_message(body, receipt_handle):
+
+
+
+def add_message_record(source, text, sent, body):
+    logger.info('adding new record to Message table [from:{}, text{}]'.format(source, text))
+    message = Message.create(source=source, text=text, sent=sent, body=body)
+    message.save()
+    pass
+
+
+def handle_incomming_message(body, receipt_handle, timestamp):
     # Lumos message has a "text" field
     if 'text' in body.keys():
         log('got a Lumos message from topic.')
@@ -71,6 +83,7 @@ def handle_incomming_message(body, receipt_handle):
             'text'] == 'hello test message':
             # log('new spot instance launched: {}.'.format(body['iid']))
             logger.info('new spot instance launched: {}.'.format(body['iid']))
+            add_message_record(source="lumos", text=body['text'], sent=timestamp, body=body)
             logger.info('deleting message.')
             delete_message(receipt_handle)
         else:
@@ -83,16 +96,25 @@ def handle_incomming_message(body, receipt_handle):
         log('got a AWS message from topic.')
         if body['detail-type'] == 'EC2 Instance State-change Notification':
             log('instance {} change state to {}.'.format(body['detail']["instance-id"], body['detail']["state"]))
+            add_message_record(source=body['source'], text=body['detail-type'], sent=timestamp, body=body)
             log('deleting message.')
             delete_message(receipt_handle)
             return
         elif body['detail-type'] == 'EC2 Spot Instance Interruption Warning':
+            add_message_record(source=body['source'], text=body['detail-type'], sent=timestamp, body=body)
             log('spot {} is changing state to {}.'.format(body['detail']["instance-id"], body['detail']["instance-action"]))
+            instance = Instance.select().where(Instance.iid == body['detail']["instance-id"])[0]
+            instance.state = body['detail']["instance-action"]
+            instance.save()
+            log('instance record {} updated: iid: {}, state to {}.'.format(instance.name, body['detail']["instance-id"], body['detail']["instance-action"]))
             log('deleting message.')
-            delete_message()
+            delete_message(receipt_handle)
             return
         elif body['detail-type'] == 'EC2 Spot Instance Request Fulfillment':
+            add_message_record(source=body['source'], text=body['detail-type'], sent=timestamp, body=body)
             log('spot request {} fulfilled. iid: {}.'.format(body['detail']["spot-instance-request-id"], body['detail']["instance-id"]))
+            instance = Instance.select().where(Instance.iid == body['detail']["instance-id"])[0]
+
             log('deleting message.')
             delete_message(receipt_handle)
             return
@@ -100,6 +122,30 @@ def handle_incomming_message(body, receipt_handle):
             log('unknown error in aws message')
             log(body)
         return
+
+
+# request_new_spot('0.05', 'ami-0fc8c8e37cd7db658', 'm5a.large', 'sg-056964e89bbf05266', 'subnet-03fb65f37827a8971'):
+def request_new_spot(spot_price, ami, type, sg, subnet):
+    response = client.request_spot_instances(
+        DryRun=False,
+        SpotPrice=spot_price,
+        ClientToken='string1',
+        InstanceCount=1,
+        Type='one-time',
+        LaunchSpecification={
+            'ImageId': ami,
+            'InstanceType': type,
+            'NetworkInterfaces': [
+                {
+                    'AssociatePublicIpAddress': True,
+                    'DeviceIndex': 0,
+                    'Groups': [sg],
+                    'SubnetId': subnet,
+                },
+            ]
+        }
+    )
+    return response
 
 
 def main():
@@ -131,6 +177,7 @@ def start_poller():
         if 'Messages' in response.keys():
             # parse
             message = response['Messages'][0]
+            timestamp = message['Attributes']['SentTimestamp']
             receipt_handle = message['ReceiptHandle']
 
             # decoding json
@@ -138,7 +185,7 @@ def start_poller():
                 # just check if its a json
                 body = json.loads(message['Body'])
                 log(body)
-                handle_incomming_message(body, receipt_handle)
+                handle_incomming_message(body, receipt_handle, timestamp)
 
             # if not json content
             except ValueError:

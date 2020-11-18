@@ -10,9 +10,10 @@ db = SqliteDatabase('spot.db')
 
 # model is a table
 class Message(Model):
+    created = DateTimeField(default=datetime.now)
     source = CharField()
     text = CharField()
-    date = DateTimeField(default=datetime.now)
+    sent = DateTimeField()
     body = CharField()
 
     class Meta:
