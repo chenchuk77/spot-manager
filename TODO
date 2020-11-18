@@ -1,1 +1,21 @@
 1. remove log() func, use logger.info()
+
+
+
+for clean start :
+
+### init a new fresh db
+1. stop all apps ( web + poller )
+2. rm spot.db
+3. start poller with DBINIT
+
+### clear SQS old messages
+1. set :
+   delete_all_queue_messages = True
+2. start the poller
+3. set back :
+   delete_all_queue_messages = False
+4. start poller
+5. start web
+6. invoke web example from stdout
+

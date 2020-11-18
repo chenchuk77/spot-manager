@@ -26,7 +26,7 @@ print('hello')
 
 client = boto3.client('ec2')
 
-request_new_spot('0.05', 'ami-0fc8c8e37cd7db658', 'm5a.large', 'sg-056964e89bbf05266', 'subnet-03fb65f37827a8971'):
+# request_new_spot('0.05', 'ami-0fc8c8e37cd7db658', 'm5a.large', 'sg-056964e89bbf05266', 'subnet-03fb65f37827a8971'):
 
 def request_new_spot(spot_price, ami, type, sg, subnet):
     response = client.request_spot_instances(

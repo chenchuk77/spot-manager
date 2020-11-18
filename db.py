@@ -23,9 +23,15 @@ class Message(Model):
 class Instance(Model):
     name = CharField()
     iid = CharField(default="")
+    sir = CharField(default="")
+    price = CharField(default="")
+    ami = CharField(default="")
+    type = CharField(default="")
+    sg = CharField(default="")
+    subnet = CharField(default="")
     public_ip = CharField(default="")
     private_ip = CharField(default="")
-    ns_record = CharField()
+    ns_record = CharField(default="")
     test_url = CharField(default="")
     modified = DateField(default=datetime.now().date())
     state = CharField(default="")
@@ -64,7 +70,10 @@ def recreate_db():
 
     print("will reinit db - FAKE")
     db.create_tables([Message, Instance])
-    inject_record()
+
+    # no need to prepare a sample record.
+    # use http to create init request instead.
+    #inject_record()
 
 
 def init(recreate=False):

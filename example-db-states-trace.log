@@ -1,0 +1,29 @@
+LOG OUTPUT :
+2020-11-18 14:07:04,800 - __main__ - INFO - {'text': 'New spot requested from spot-manager', 'name': 'lms-chen', 'ns_record': 'lms-chen.lms.lumosglobal.com', 'price': '0.05', 'ami': 'ami-0fc8c8e37cd7db658', 'type': 'm5a.large', 'sg': 'sg-056964e89bbf05266', 'subnet': 'subnet-03fb65f37827a8971'}
+2020-11-18 14:07:04,800 - __main__ - INFO - got a Lumos message from topic.
+2020-11-18 14:07:04,800 - __main__ - INFO - new spot request for lms-chen : (price:0.05, ami: ami-0fc8c8e37cd7db658, type: m5a.large, sg: sg-056964e89bbf05266, subnet:subnet-03fb65f37827a8971)
+2020-11-18 14:07:05,948 - __main__ - INFO - updating record name: lms-chen, with sir: sir-5xti5sip params.
+2020-11-18 14:07:05,961 - __main__ - INFO - deleting message.
+2020-11-18 14:07:07,190 - __main__ - INFO - no messages in sqs
+2020-11-18 14:07:09,536 - __main__ - INFO - no messages in sqs
+2020-11-18 14:07:10,632 - __main__ - INFO - {'version': '0', 'id': 'be13481f-4f67-ca35-4c4e-6a8a9352ba23', 'detail-type': 'EC2 Spot Instance Request Fulfillment', 'source': 'aws.ec2', 'account': '390415077514', 'time': '2020-11-18T12:07:07Z', 'region': 'eu-west-1', 'resources': ['arn:aws:ec2:eu-west-1:390415077514:instance/i-0b29e9427854d8254'], 'detail': {'spot-instance-request-id': 'sir-5xti5sip', 'instance-id': 'i-0b29e9427854d8254'}}
+2020-11-18 14:07:10,632 - __main__ - INFO - got a AWS message from topic.
+2020-11-18 14:07:10,633 - __main__ - INFO - adding new record to Message table [from:aws.ec2, textEC2 Spot Instance Request Fulfillment]
+2020-11-18 14:07:10,645 - __main__ - INFO - spot request sir-5xti5sip fulfilled. iid: i-0b29e9427854d8254.
+2020-11-18 14:07:10,670 - __main__ - INFO - instance: lms-chen record updated: [iid: i-0b29e9427854d8254 and state: spot-fulfilled.]
+2020-11-18 14:07:10,670 - __main__ - INFO - deleting message.
+2020-11-18 14:07:24,494 - __main__ - INFO - no messages in sqs
+2020-11-18 14:07:25,637 - __main__ - INFO - no messages in sqs
+2020-11-18 14:07:26,734 - __main__ - INFO - {'version': '0', 'id': '5e33519e-dfd2-f51e-b3ba-62c14c0cf1c1', 'detail-type': 'EC2 Instance State-change Notification', 'source': 'aws.ec2', 'account': '390415077514', 'time': '2020-11-18T12:07:16Z', 'region': 'eu-west-1', 'resources': ['arn:aws:ec2:eu-west-1:390415077514:instance/i-0b29e9427854d8254'], 'detail': {'instance-id': 'i-0b29e9427854d8254', 'state': 'running'}}
+2020-11-18 14:07:26,735 - __main__ - INFO - got a AWS message from topic.
+2020-11-18 14:07:26,735 - __main__ - INFO - adding new record to Message table [from:aws.ec2, textEC2 Instance State-change Notification]
+2020-11-18 14:07:26,747 - __main__ - INFO - instance i-0b29e9427854d8254 change state to running.
+2020-11-18 14:07:26,747 - __main__ - INFO - updating record iid: i-0b29e9427854d8254, with state: running params.
+2020-11-18 14:07:26,763 - __main__ - INFO - deleting message.
+2020-11-18 14:07:27,995 - __main__ - INFO - no messages in sqs
+2020-11-18 14:07:29,138 - __main__ - INFO - no messages in sqs
+
+DB TRACE OUTPUT :
+1|lms-chen|i-0bbb44e32bb59eadd|sir-5xti5sip|0.05|ami-0fc8c8e37cd7db658|m5a.large|sg-056964e89bbf05266|subnet-03fb65f37827a8971|||||2020-11-18|terminated
+1|lms-chen|i-0b29e9427854d8254|sir-5xti5sip|0.05|ami-0fc8c8e37cd7db658|m5a.large|sg-056964e89bbf05266|subnet-03fb65f37827a8971|||||2020-11-18|spot-fulfilled
+1|lms-chen|i-0b29e9427854d8254|sir-5xti5sip|0.05|ami-0fc8c8e37cd7db658|m5a.large|sg-056964e89bbf05266|subnet-03fb65f37827a8971|||||2020-11-18|running
