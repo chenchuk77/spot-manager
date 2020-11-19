@@ -61,5 +61,5 @@ def request_spot():
 if __name__ == '__main__':
     print('web server started - listening to spot requests')
     print('add spot request example:')
-    print('http://localhost:5000/request?name=lms-chen&ns_record=lms-chen.lms.lumosglobal.com&price=0.05&ami=ami-0fc8c8e37cd7db658&type=m5a.large&sg=sg-056964e89bbf05266&subnet=subnet-03fb65f37827a8971')
+    print('http://localhost:5000/request?name=lms-chen&ns_record=lms-chen.lms.lumosglobal.com&price=0.05&ami=ami-0de58b100a36270fa&type=m5a.large&sg=sg-056964e89bbf05266&subnet=subnet-03fb65f37827a8971')
     app.run()

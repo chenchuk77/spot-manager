@@ -44,4 +44,4 @@ resp = sqs.send_message(
     MessageBody=json.dumps(msg))
 
 #print(resp['MessageId'])
-print ("Message has been sent to SQS.")
+print ("Message with own metadata has been sent to SQS.")

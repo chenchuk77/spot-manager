@@ -185,7 +185,7 @@ def handle_incomming_message(body, receipt_handle, timestamp):
 
 # request_new_spot('0.05', 'ami-0fc8c8e37cd7db658', 'm5a.large', 'sg-056964e89bbf05266', 'subnet-03fb65f37827a8971'):
 def request_new_spot(spot_price, ami, type, sg, subnet):
-    userdata_script = """#!/bin/bash
+    userdata_script = f"""#!/bin/bash
       # DONT EXECUTE !
       #
       # This script will be executed only once on instance first launch
@@ -197,16 +197,22 @@ def request_new_spot(spot_price, ami, type, sg, subnet):
       # 4. change prompt (lms/root)
       #
       LOG=/home/lms/user-data.output
-      echo "$(date) - starting"         >> ${LOG}
-      echo "executing userdata.sh"      >> ${LOG}
-      echo "sourcing credentials"       >> ${LOG}
+      echo "$(date) - starting"           >> $LOG
+      echo "executing userdata.sh"        >> $LOG
+      echo "sourcing credentials"         >> $LOG
       source /home/lms/sqs-config
-      python3 publish-metadata.py
-      echo "$(date) - done."            >> ${LOG}
+      echo "publish metadata to SQS       >> $LOG
+      python3 /home/lms/publish-metadata.py         >> $LOG
+      echo "starting self redeployment"   >> $LOG
+      /home/lms/self-deploy.sh            >> $LOG
+      echo "$(date) - done."              >> $LOG
+      echo "waiting 2m"                   >> $LOG
+      sleep 2m
+      echo "waiting 10s before reboot"    >> $LOG
+      sleep 10s
       reboot
     """
-
-    # self.output_template = base64.b64encode(output_template.encode("ascii")).decode("ascii")
+    userdata_script = base64.b64encode(userdata_script.encode("ascii")).decode("ascii")
 
     response = client.request_spot_instances(
         DryRun=False,
