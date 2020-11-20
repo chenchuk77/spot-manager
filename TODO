@@ -1,6 +1,15 @@
 1. remove log() func, use logger.info()
 
 
+PREREQ for source VM:
+1. have self-deploy.sh on the VM
+2. install python3
+3. make sure cloud-init is not broken
+   $ cloud-init --version
+   $ pip3 install --upgrade jsonpatch # this should fix
+4. make AMI
+
+
 
 for clean start :
 

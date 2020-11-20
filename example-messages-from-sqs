@@ -19,7 +19,7 @@
 11/03/20 11:09:56 - {'version': '0', 'id': 'e1554408-3b7f-e2c3-8b88-6414de7ca0d7', 'detail-type': 'EC2 Spot Instance Interruption Warning', 'source': 'aws.ec2', 'account': '390415077514', 'time': '2020-11-02T09:59:19Z', 'region': 'eu-west-1', 'resources': ['arn:aws:ec2:eu-west-1a:instance/i-00b0d8c85295200b0'], 'detail': {'instance-id': 'i-00b0d8c85295200b0', 'instance-action': 'terminate'}}
 
 ---
-- {'text': 'New spot requested from spot-manager', 'price': '0.05', 'ami': 'ami-0fc8c8e37cd7db658', 'type': 'm5a.large', 'sg': 'sg-056964e89bbf05266', 'subnet': 'subnet-03fb65f37827a8971'}
+- {'text': 'New spot requested from web-server', 'price': '0.05', 'ami': 'ami-0fc8c8e37cd7db658', 'type': 'm5a.large', 'sg': 'sg-056964e89bbf05266', 'subnet': 'subnet-03fb65f37827a8971'}
 - {'text': 'Lumos new spot instance launched', 'iid': 'i-123456789', 'public_ip': '3.3.3.3', 'private_ip': '10.6.6.6'}
 - {'version': '0', 'id': 'e1554408-3b7f-e2c3-8b88-6414de7ca0d7', 'detail-type': 'EC2 Spot Instance Interruption Warning', 'source': 'aws.ec2', 'account': '390415077514', 'time': '2020-11-02T09:59:19Z', 'region': 'eu-west-1', 'resources': ['arn:aws:ec2:eu-west-1a:instance/i-00b0d8c85295200b0'], 'detail': {'instance-id': 'i-00b0d8c85295200b0', 'instance-action': 'terminate'}}
 - {'version': '0', 'id': 'd8100774-0b3d-e98f-4d93-66107b37464e', 'detail-type': 'EC2 Instance State-change Notification', 'source': 'aws.ec2', 'account': '390415077514', 'time': '2020-11-02T09:19:30Z', 'region': 'eu-west-1', 'resources': ['arn:aws:ec2:eu-west-1:390415077514:instance/i-03cfa8dd683e2d5bf'], 'detail': {'instance-id': 'i-03cfa8dd683e2d5bf', 'state': 'pending'}}

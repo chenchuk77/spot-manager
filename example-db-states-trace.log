@@ -1,5 +1,5 @@
 LOG OUTPUT :
-2020-11-18 14:07:04,800 - __main__ - INFO - {'text': 'New spot requested from spot-manager', 'name': 'lms-chen', 'ns_record': 'lms-chen.lms.lumosglobal.com', 'price': '0.05', 'ami': 'ami-0fc8c8e37cd7db658', 'type': 'm5a.large', 'sg': 'sg-056964e89bbf05266', 'subnet': 'subnet-03fb65f37827a8971'}
+2020-11-18 14:07:04,800 - __main__ - INFO - {'text': 'New spot requested from web-server', 'name': 'lms-chen', 'ns_record': 'lms-chen.lms.lumosglobal.com', 'price': '0.05', 'ami': 'ami-0fc8c8e37cd7db658', 'type': 'm5a.large', 'sg': 'sg-056964e89bbf05266', 'subnet': 'subnet-03fb65f37827a8971'}
 2020-11-18 14:07:04,800 - __main__ - INFO - got a Lumos message from topic.
 2020-11-18 14:07:04,800 - __main__ - INFO - new spot request for lms-chen : (price:0.05, ami: ami-0fc8c8e37cd7db658, type: m5a.large, sg: sg-056964e89bbf05266, subnet:subnet-03fb65f37827a8971)
 2020-11-18 14:07:05,948 - __main__ - INFO - updating record name: lms-chen, with sir: sir-5xti5sip params.
