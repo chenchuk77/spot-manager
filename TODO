@@ -11,14 +11,13 @@ PREREQ for source VM:
 
 
 
-for clean start :
 
-### init a new fresh db
+########## clean start - init a new fresh db (DELETE ALL RECORDS !!!)
 1. stop all apps ( web + poller )
 2. rm spot.db
 3. start poller with DBINIT
 
-### clear SQS old messages
+########## clear SQS old messages
 1. set :
    delete_all_queue_messages = True
 2. start the poller
@@ -28,5 +27,3 @@ for clean start :
 5. start web
 6. invoke web example from stdout
 
-
-NOW : when ami-0de58b100a36270fa ready , request a web

@@ -126,8 +126,9 @@ def handle_incomming_message(body, receipt_handle, timestamp):
             if query.exists():
                 instance = Instance.select().where(Instance.iid == body['iid'])[0]
                 instance.public_ip = body['public_ip']
-                logger.info('updating record for: {} with public_ip: {}.'
-                            .format(instance.name, instance.public_ip))
+                instance.private_ip = body['private_ip']
+                logger.info('updating record for: {} with public_ip: {}, private_ip: {}.'
+                            .format(instance.name, instance.public_ip, instance.private_ip))
                 instance.save()
                 logger.info('updating route53 for: {} [ns_record: {} public_ip: {}].'
                             .format(instance.name, instance.ns_record, instance.public_ip))
