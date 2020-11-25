@@ -12,6 +12,9 @@ Its duty is to respond to SPOT_INTERRUPTION notifications, and request a new spo
 
 *** NOTE: web-server is the only way to add a managed instance
 
+### System components
+![](spot-manager.png)
+
 ### Workflow example
 1. user request to add instance lms-chen to web-server
 2. web server publishes SQS message for registration
