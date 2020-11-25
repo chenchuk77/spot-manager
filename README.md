@@ -17,15 +17,15 @@ Its duty is to respond to SPOT_INTERRUPTION notifications, and request a new spo
 
 ### Workflow example
 1. user request to add instance lms-chen to web-server
-2. web server publishes SQS message for registration
-3. spot-manager poller receive the message and add lms-chen to a local db (its now managed)
-4. spot-manager requests a new spot (sir) and updates the sir for lms-chen
-5. when sir is fulfilled by amazon (spot starts), the iid returned is updated for lms-chen
-6. the spot is starting and running cloud-init code (once) to:
-    - reconfigure the application (tomcat) params with the new private ip address
-    - publish an SQS message with the new public_ip
-    - reboots
-7. spot-manager receives the new spot message from SQS and changes the ns_record (route53) to refer to the new public ip address
+1a. web server publishes SQS message for registration
+1b. spot-manager poller receive the message and add lms-chen to a local db (its now managed)
+2. spot-manager requests a new spot (sir) and updates the sir for lms-chen
+3. sir is fulfilled by amazon
+4. new spot launched the iid returned is updated for lms-chen
+5. spot-manager updates its local db with new iid
+6. the spot is running cloud-init code (once) for app reconfiguration (tomcat) with the new private ip address
+7. the spot publish an SQS message with the new public_ip  and reboots
+8. spot-manager receives the new spot message from SQS and changes the ns_record (route53) to refer to the new public ip address
 8. user can now ping lms-chen.lms.lumosglobal.com
 NOTE TESTED YET:
 9. aws will notify SQS with "SPOT INTERRUPTION" 2 minutes before spot will go down
