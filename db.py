@@ -32,6 +32,7 @@ class Instance(Model):
     public_ip = CharField(default="")
     private_ip = CharField(default="")
     ns_record = CharField(default="")
+    public_access = CharField(default="")
     test_url = CharField(default="")
     modified = DateField(default=datetime.now().date())
     state = CharField(default="")
