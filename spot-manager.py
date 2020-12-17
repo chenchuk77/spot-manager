@@ -216,8 +216,8 @@ def request_new_spot(name, spot_price, ami, _type, sg, subnet, public_access):
 # export into the environment
 #
 
-export AWS_ACCESS_KEY_ID=AKIAJFWBUQHTFIVVMSHA
-export AWS_SECRET_ACCESS_KEY=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
+export AWS_ACCESS_KEY_ID=AKIA********************
+export AWS_SECRET_ACCESS_KEY=************************************
 export AWS_DEFAULT_REGION=eu-west-1
 export QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/390415077514/spot-test
 
