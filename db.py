@@ -31,7 +31,8 @@ class Instance(Model):
     subnet = CharField(default="")
     public_ip = CharField(default="")
     private_ip = CharField(default="")
-    ns_record = CharField(default="")
+    public_ns = CharField(default="")
+    private_ns = CharField(default="")
     public_access = CharField(default="")
     test_url = CharField(default="")
     modified = DateField(default=datetime.now().date())
@@ -48,7 +49,7 @@ def inject_record():
         "iid": "i-0763b2c8743f823ef",
         "public_ip": "1.1.1.1",
         "private_ip": "10.10.10.10",
-        "ns_record": "lms-chen.lms.lumosglobal.com",
+        "public_ns": "lms-chen.lms.lumosglobal.com",
         "test_url": "https://lms-chen.lms.lumosglobal.com:1883/lms/v1/system/status",
         "state": "init"
     }
@@ -56,7 +57,7 @@ def inject_record():
                                iid=lms_chen["iid"],
                                public_ip=lms_chen["public_ip"],
                                private_ip=lms_chen["private_ip"],
-                               ns_record=lms_chen["ns_record"],
+                               public_ns=lms_chen["public_ns"],
                                test_url=lms_chen["test_url"],
                                state=lms_chen["state"])
     instance.save()
