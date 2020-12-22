@@ -41,6 +41,33 @@ NOTE TESTED YET:
 
 *** NOTE
 
+### Environment configuration
+1. APIGW apache should use private NS to access core devices instead of private IPs
+2. zookeeper config
+server.1=mq1-stg39.lms.lumosglobal.com:2888:3888
+server.2=mq2-stg39.lms.lumosglobal.com:2888:3888
+server.3=mq3-stg39.lms.lumosglobal.com:2888:3888
+
+2. Kafka connection string should use private NS:
+zookeeper.connect=mq1-stg39.lms.lumosglobal.com:2181,mq2-stg39.lms.lumosglobal.com:2181,mq3-stg39.lms.lumosglobal.com:2181
+
+3. configure backend (and other core service to use NS for kafka)
+cp -ar conf/ conf.original
+grep -R 2181
+OLD_ZOO_CS=10.25.1.224:2181,10.25.1.125:2181,10.25.1.28:2181
+NEW_ZOO_CS=mq1-stg39.lms.lumosglobal.com:2181,mq2-stg39.lms.lumosglobal.com:2181,mq3-stg39.lms.lumosglobal.com:2181
+sed -i "s/${OLD_ZOO_CS}/${NEW_ZOO_CS}/g" backend-messaging.properties
+
+grep -R 9092
+OLD_KAFKA_CS=10.25.1.224:9092,10.25.1.125:9092,10.25.1.28:9092
+NEW_KAFKA_CS=mq1-stg39.lms.lumosglobal.com:9092,mq2-stg39.lms.lumosglobal.com:9092,mq3-stg39.lms.lumosglobal.com:9092
+sed -i "s/${OLD_KAFKA_CS}/${NEW_KAFKA_CS}/g" backend-messaging.properties
+
+
+
+NOTE: kafka.rmi.server.hostname uses private ip but is meaningless, so no need to replace
+
+
 
 TODO:
 1. implement spot-image-creator

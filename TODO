@@ -1,5 +1,5 @@
 1. remove log() func, use logger.info()
-
+2. add name to spot instance (must api call AFTER spot fulfilled)
 
 PREREQ for source VM:
 1. have self-deploy.sh on the VM
