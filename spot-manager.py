@@ -76,7 +76,7 @@ def delete_message(receipt_handle):
 # update_instance_record(body['name'], body['price'], body['ami'], body['type'], body['sg'], body['subnet'])
 #
 
-def update_instance_record(name, sir, price, ami, _type, sg, subnet, public_access, ns_record):
+def update_instance_record(name, sir, price, ami, _type, sg, subnet, public_access, private_ns, public_ns):
     query = Instance.select().where(Instance.name == name)
     if query.exists():
         logger.info('updating record name: {}, with sir: {} params.'.format(name, sir))
@@ -87,12 +87,13 @@ def update_instance_record(name, sir, price, ami, _type, sg, subnet, public_acce
         instance.type = _type
         instance.sg = sg
         instance.subnet = subnet
-        instance.ns_record = ns_record
+        instance.public_ns = private_ns
+        instance.public_ns = public_ns
         instance.public_access = public_access
         instance.save()
     else:
         logger.info('adding new record: name: {} with sir: {} params.'.format(name, sir))
-        instance = Instance.create(name=name, ns_record=ns_record, public_access=public_access, sir=sir, price=price, ami=ami, type=_type, sg=sg,
+        instance = Instance.create(name=name, private_ns=private_ns,public_ns=public_ns, public_access=public_access, sir=sir, price=price, ami=ami, type=_type, sg=sg,
                                    subnet=subnet, state="spot-requested")
         instance.save()
 
@@ -132,12 +133,17 @@ def handle_incomming_message(body, receipt_handle, timestamp):
                 logger.info('updating record for: {} with public_ip: {}, private_ip: {}.'
                             .format(instance.name, instance.public_ip, instance.private_ip))
                 instance.save()
-                if instance.ns_record == 'NONE':
-                    logger.info('no DNS record for this spot, skipping route53')
+
+                logger.info('updating route53 private ns record for: {} [private_ns: {} private_ip: {}].'
+                            .format(instance.name, instance.private_ns, instance.private_ip))
+                resp1 = change_ns_record(instance.name, instance.private_ns, instance.private_ip)
+
+                if instance.public_ns == 'NONE':
+                    logger.info('no public record for this spot.')
                 else:
-                    logger.info('updating route53 for: {} [ns_record: {} public_ip: {}].'
-                                .format(instance.name, instance.ns_record, instance.public_ip))
-                    resp = change_ns_record(instance.name, instance.ns_record, instance.public_ip)
+                    logger.info('updating route53 public ns record for: {} [public_ns: {} public_ip: {}].'
+                                .format(instance.name, instance.public_ns, instance.public_ip))
+                    resp2 = change_ns_record(instance.name, instance.public_ns, instance.public_ip)
                 logger.info('deleting message.')
                 delete_message(receipt_handle)
             else:
@@ -151,7 +157,7 @@ def handle_incomming_message(body, receipt_handle, timestamp):
             # get the spot req id
             sir = resp['SpotInstanceRequests'][0]['SpotInstanceRequestId']
             update_instance_record(body['name'], sir, body['price'], body['ami'], body['type'], body['sg'],
-                                   body['subnet'], body['public_access'], ns_record=body['ns_record'])
+                                   body['subnet'], body['public_access'], body['private_ns'], body['public_ns'])
             logger.info('deleting message.')
             delete_message(receipt_handle)
         else:
@@ -212,12 +218,12 @@ def handle_incomming_message(body, receipt_handle, timestamp):
 def request_new_spot(name, spot_price, ami, _type, sg, subnet, public_access):
     public_access = str.lower(public_access) == 'true'
 
-    sqs_config = """
+    sqs_config = f"""
 # export into the environment
 #
 
-export AWS_ACCESS_KEY_ID=AKIAJFWBUQHTFIVVMSHA
-export AWS_SECRET_ACCESS_KEY=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
+export AWS_ACCESS_KEY_ID={os.environ['AWS_ACCESS_KEY_ID']}
+export AWS_SECRET_ACCESS_KEY={os.environ['AWS_SECRET_ACCESS_KEY']}
 export AWS_DEFAULT_REGION=eu-west-1
 export QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/390415077514/spot-test
 
@@ -311,7 +317,10 @@ echo "{sqs_config}"              > /home/ubuntu/sqs-config
 
 echo "installing python3"                     >> $LOG
 apt-get -yqq install python3-pip              >> $LOG
-pip3 install -q boto3 ec2_metadata            >> $LOG
+pip3 install -q ec2_metadata                  >> $LOG
+pip3 install -q "boto3==1.16.40"              >> $LOG 
+pip3 install -q "botocore==1.19.40"           >> $LOG
+
 echo "python3 version: $(python3 -V)"         >> $LOG
 echo "pip3 version: $(pip3 -V)"               >> $LOG
 
@@ -367,11 +376,11 @@ echo "$(date) - done."                        >> $LOG
     return response
 
 
-def change_ns_record(name, ns_record, public_ip):
+def change_ns_record(name, ns_record, ip_address):
 
     hosted_zone_id = '/hostedzone/ZSPS4JHX4X90T'
     # ns_record = 'lms-chen.lms.lumosglobal.com'
-    # public_ip = '7.7.7.7'
+    # ip_address = '7.7.7.7'
 
     response = route53_client.change_resource_record_sets(
         HostedZoneId=hosted_zone_id,
@@ -386,7 +395,7 @@ def change_ns_record(name, ns_record, public_ip):
                         'TTL': 123,
                         'ResourceRecords': [
                             {
-                                'Value': public_ip
+                                'Value': ip_address
                             },
                         ]
                     }
