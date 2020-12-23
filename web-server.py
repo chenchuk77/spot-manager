@@ -7,6 +7,8 @@ import json
 import os
 from db import Instance, Message, init
 import pandas as pd
+from flask_peewee.rest import RestAPI
+
 
 # db access
 init()
@@ -22,6 +24,18 @@ version='1.00'
 
 start_time = datetime.now()
 app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+
+
+# instantiate our api wrapper
+api = RestAPI(app)
+
+# register our models so they are exposed via /api/<model>/
+api.register(Message)
+api.register(Instance)
+
+# configure the urls
+api.setup()
 
 
 @app.route('/')
@@ -112,4 +126,4 @@ if __name__ == '__main__':
     print('check db message table:')
     print('http://localhost:5000/messages')
 
-    app.run()
+    app.run(host= '0.0.0.0')

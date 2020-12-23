@@ -27,3 +27,14 @@ PREREQ for source VM:
 5. start web
 6. invoke web example from stdout
 
+
+
+######## PROBLEMS:
+# install flask-peewee from git if got HTTP error
+pip install git+https://github.com/coleifer/flask-peewee.git@fd89cf20fe9525b195596d17ee122110a110f67d
+
+#### TEST API:
+curl http://127.0.0.1:5000/api/instance/?name=stg39-mq3
+curl http://127.0.0.1:5000/api/instance/ | jq .
+curl http://127.0.0.1:5000/api/instance/\?name\=stg39-mq2
+curl http://127.0.0.1:5000/api/message/ | jq .
