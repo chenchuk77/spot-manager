@@ -9,6 +9,9 @@ from db import Instance, Message, init
 import pandas as pd
 from flask_peewee.rest import RestAPI
 
+#from ec2_running_time import get_data
+import ec2_running_time
+
 
 # db access
 init()
@@ -36,6 +39,36 @@ api.register(Instance)
 
 # configure the urls
 api.setup()
+
+@app.route('/ec2_usage', methods=['GET'])
+def get_ec2_running_time_of_all_instances():
+    running_time = ec2_running_time.get_data()[0]
+    df = pd.DataFrame(data=running_time)
+    df = df.fillna(' ').T
+    resp = df.to_html()
+    return resp
+
+@app.route('/ec2_env', methods=['GET'])
+def get_ec2_running_time_sum_by_env():
+    env_running_time = ec2_running_time.get_data()[1]
+
+    # remove 'prod' from output
+    env_running_time = {k: v for k, v in env_running_time.items() if 'prod' not in k}
+
+    # convert values from scalars to list (for pandas)
+    env_running_time = {k: [v] for k, v in env_running_time.items()}
+
+    # df = pd.DataFrame(data=env_running_time)
+    #df = pd.DataFrame.from_dict(env_running_time, orient='index')
+
+    df = pd.concat({k: pd.DataFrame(v).T for k, v in env_running_time.items()}, axis=0)
+    df = df.transpose()
+
+    #df = pd.DataFrame(data=env_running_time)
+    df = df.fillna(' ').T
+    resp = df.to_html()
+    return resp
+
 
 
 @app.route('/')
@@ -119,6 +152,12 @@ if __name__ == '__main__':
     print('http://localhost:5000/add?name=stg39-mq1&private_ns=mq1-stg39.lms.lumosglobal.com&public_ns=NONE&public_access=FALSE&price=0.018&ami=ami-00a17c5c2eb47556d&type=t3.medium&sg=sg-05d916ecafcfdcce4&subnet=subnet-094d40d7b71e3e5e5')
     print('http://localhost:5000/add?name=stg39-mq2&private_ns=mq2-stg39.lms.lumosglobal.com&public_ns=NONE&public_access=FALSE&price=0.018&ami=ami-0c3d524990d12fa2c&type=t3.medium&sg=sg-05d916ecafcfdcce4&subnet=subnet-094d40d7b71e3e5e5')
     print('http://localhost:5000/add?name=stg39-mq3&private_ns=mq3-stg39.lms.lumosglobal.com&public_ns=NONE&public_access=FALSE&price=0.018&ami=ami-0224ca09385606e43&type=t3.medium&sg=sg-05d916ecafcfdcce4&subnet=subnet-094d40d7b71e3e5e5')
+
+    print('EXAMPLE FOR COUNTING RUNNING TIME :')
+    print('http://localhost:5000/ec2_usage')
+    print('http://localhost:5000/ec2_env')
+
+
 
 
     print('check db instances table:')

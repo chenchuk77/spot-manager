@@ -38,3 +38,7 @@ curl http://127.0.0.1:5000/api/instance/?name=stg39-mq3
 curl http://127.0.0.1:5000/api/instance/ | jq .
 curl http://127.0.0.1:5000/api/instance/\?name\=stg39-mq2
 curl http://127.0.0.1:5000/api/message/ | jq .
+
+
+elastic ip association for simulator
+### aws ec2 associate-address --allocation-id "eipalloc-d0drandomizedac1792" --instance-id $instanceId --allow-reassociation --region eu-central-1
