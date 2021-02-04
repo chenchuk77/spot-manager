@@ -138,7 +138,7 @@ def handle_incomming_message(body, receipt_handle, timestamp):
                             .format(instance.name, instance.private_ns, instance.private_ip))
                 resp1 = change_ns_record(instance.name, instance.private_ns, instance.private_ip)
 
-                if instance.public_ns == 'NONE':
+                if instance.public_ns == 'NONE' or 'eipalloc' in instance.public_ns:
                     logger.info('no public record for this spot.')
                 else:
                     logger.info('updating route53 public ns record for: {} [public_ns: {} public_ip: {}].'
@@ -146,6 +146,7 @@ def handle_incomming_message(body, receipt_handle, timestamp):
                     resp2 = change_ns_record(instance.name, instance.public_ns, instance.public_ip)
                 logger.info('deleting message.')
                 delete_message(receipt_handle)
+
             else:
                 logger.info('ignoring new spot with iid: {} (not managed by spot-manager).'.format(body['iid']))
 
@@ -203,6 +204,15 @@ def handle_incomming_message(body, receipt_handle, timestamp):
             log('instance: {} record updated: [iid: {} and state: spot-fulfilled.]'
                 .format(instance.name, body['detail']['instance-id']))
 
+
+            # EIP
+            if 'eipalloc' in instance.public_ns:
+                logger.info('request eip association for {} [allocation_id: {}].'
+                            .format(instance.name, instance.public_ns))
+                resp1 = associate_eip(instance.public_ns, instance.iid)
+
+
+
             # instance = Instance.select().where(Instance.iid == body['detail']["instance-id"])[0]
 
             log('deleting message.')
@@ -217,6 +227,7 @@ def handle_incomming_message(body, receipt_handle, timestamp):
 # request_new_spot('0.05', 'ami-0fc8c8e37cd7db658', 'm5a.large', 'sg-056964e89bbf05266', 'subnet-03fb65f37827a8971'):
 def request_new_spot(name, spot_price, ami, _type, sg, subnet, public_access):
     public_access = str.lower(public_access) == 'true'
+
 
     sqs_config = f"""
 # export into the environment
@@ -402,6 +413,16 @@ def change_ns_record(name, ns_record, ip_address):
                 }
             ]
         }
+    )
+    return response
+
+#associate_eip('eipalloc-236c3446', 'i-070d14052819edde6')
+def associate_eip(allocation_id, instance_id):
+    response = client.associate_address(
+        AllocationId=allocation_id,
+        InstanceId=instance_id,
+        AllowReassociation=True,
+        DryRun=False
     )
     return response
 
