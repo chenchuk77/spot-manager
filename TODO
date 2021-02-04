@@ -41,4 +41,9 @@ curl http://127.0.0.1:5000/api/message/ | jq .
 
 
 elastic ip association for simulator
-### aws ec2 associate-address --allocation-id "eipalloc-d0drandomizedac1792" --instance-id $instanceId --allow-reassociation --region eu-central-1
+### aws ec2 associate-address \
+        --allocation-id "eipalloc-d0drandomizedac1792" \
+        --instance-id $instanceId \
+        --allow-reassociation \
+        --region eu-central-1
+

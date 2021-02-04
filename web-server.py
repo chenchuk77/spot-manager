@@ -157,7 +157,10 @@ if __name__ == '__main__':
     print('http://localhost:5000/ec2_usage')
     print('http://localhost:5000/ec2_env')
 
+    print('EXAMPLE FOR testing EIP replacement:')
 
+    #print('http://localhost:5000/add?name=lms-simulator3&private_ns=lms-simulator.lms.lumosglobal.com&public_ns=NONE&public_access=FALSE&price=0.1&ami=ami-0d1fb1e174878d84a&type=m5.xlarge&sg=sg-0dd8b70438998c681&subnet=subnet-db6bf992')
+    print('http://localhost:5000/add?name=lms-simulator3&private_ns=lms-simulator.lms.lumosglobal.com&public_ns=eipalloc-236c3446&public_access=FALSE&price=0.1&ami=ami-0d1fb1e174878d84a&type=m5.xlarge&sg=sg-0dd8b70438998c681&subnet=subnet-db6bf992')
 
 
     print('check db instances table:')
